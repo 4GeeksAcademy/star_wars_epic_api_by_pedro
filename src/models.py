@@ -4,6 +4,8 @@ db = SQLAlchemy()
 
 import os
 import sys
+
+from enum import Enum
 from sqlalchemy import ForeignKey, Integer, String
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -56,19 +58,25 @@ class User(db.Model):
     password:str=db.Column(db.String(250),nullable=False )
     email:str=db.Column(db.String(250), nullable=False, unique=True)
 
-class FavoriteTypeEnum(str,enum.Enum):
-    Planet="Planet"
-    character="Character"
-    Species="Species"
+
+class FavoriteTypeEnum(str,Enum):
+    planet="planet"
+    character="character"
+    species="species"
+
+
 
 @dataclass
 class Favourite_list(db.Model):
-    _tablename_ = 'favourite_list'
-    id:int = db.Column(db.Integer, primary_key=True,unique=True)
-    user_id:int = db.Column(db.Integer, ForeignKey('user.id'),nullable=False)
-    external_id:int=db.Column(db.Integer,nullable=False)
-    name:str=db.Column(db.String(250),nullable=False)
-    type:FavoriteTypeEnum=db.Column(db.Enum(FavoriteTypeEnum),nullable=False)
+    __tablename__ = 'favourites'
+    id: int = db.Column(db.Integer, primary_key=True, nullable=False)
+    external_id: int = db.Column(db.Integer, nullable=False)
+    type: str = db.Column(db.Enum(FavoriteTypeEnum), nullable=False)
+    name: str = db.Column(db.String(50), nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Favourite {self.name}>'
 
 
 
@@ -81,3 +89,5 @@ class Favourite_list(db.Model):
     #         "email": self.email,
     #         # do not serialize the password, its a security breach
     #     }
+
+
